@@ -33,15 +33,35 @@ public class Recursion {
         s.push(3);
         s.push(8);
         s.push(53);
-        s.push(24);
+//        s.push(24);
 
         System.out.println(s);
-        sortStack(s);
+//        sortStack(s);
+        int k = s.size()/2 + 1;
+        deleteMidOfStack(s, k);
         System.out.println(s);
     }
 
 //----------Following problems are from Aditya verma, unless specified----------
 
+
+    public static void deleteMidOfStack(Stack<Integer> s, int k) {
+//        H : delete(s) --> deletes mid elem of stack
+//        I : del(s) --> pop top
+//                       del(stack') : del mid of previous stack in modified stack'[stack' - this is new stack with its previous top popped]
+//                       push top back to the above stack whose mid elem is deleted
+//        BC : if size = k(=size/2 +1) --> s.pop
+
+//        int k = s.size()/2 + 1; //this is the mid elem position in stack irrespective of size of stack being even or odd
+        if (s.size() == k) {
+            s.pop();
+            return;
+        }
+
+        int top = s.pop();
+        deleteMidOfStack(s, k);
+        s.push(top);
+    }
 
     //Similar to array
     public static void sortStack(Stack<Integer> s) {
