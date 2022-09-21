@@ -37,13 +37,44 @@ public class Recursion {
 
         System.out.println(s);
 //        sortStack(s);
-        int k = s.size()/2 + 1;
-        deleteMidOfStack(s, k);
+//        int k = s.size()/2 + 1;
+//        deleteMidOfStack(s, k);
+        reverseStack(s);
         System.out.println(s);
     }
 
 //----------Following problems are from Aditya verma, unless specified----------
 
+
+    public static void reverseStack(Stack<Integer> s) {
+//        H : rev(s) --> reverses the stack
+//        I : rev(s) --> remove top
+//                       reverse rest of stack (rev(s'))
+//                       reinsert top in front of stack
+//        BC : if size = 1   return
+
+        if (s.size() == 1)  return;
+
+        int topTemp = s.pop();
+        reverseStack(s);
+        insertElemInFrontStack(topTemp, s);
+    }
+
+    private static void insertElemInFrontStack(int temp, Stack<Integer> s) {
+//        H : insert(t, s) --> inserts t in stack front
+//        I : insert(t, s) --> insert(t, s[new stack formed on removing its top elem])
+//                             reinsert the top elem
+//        BC : if stack.isEmpty --> push t in stack [i.e. inserted temp to the front of stack, and now all other elem will be reinserted]
+
+        if (s.isEmpty()) {
+            s.push(temp);
+            return;
+        }
+
+        int top = s.pop();
+        insertElemInFrontStack(temp, s);
+        s.push(top);
+    }
 
     public static void deleteMidOfStack(Stack<Integer> s, int k) {
 //        H : delete(s) --> deletes mid elem of stack
