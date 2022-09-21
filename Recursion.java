@@ -26,25 +26,40 @@ public class Recursion {
 //        arr.add(8);
 //        arr.add(3);
 //        System.out.println(sortArrRecursively(arr));
-        Stack<Integer> s = new Stack<>();
-        s.push(4);
-        s.push(45);
-        s.push(1);
-        s.push(3);
-        s.push(8);
-        s.push(53);
+//        Stack<Integer> s = new Stack<>();
+//        s.push(4);
+//        s.push(45);
+//        s.push(1);
+//        s.push(3);
+//        s.push(8);
+//        s.push(53);
 //        s.push(24);
 
-        System.out.println(s);
+//        System.out.println(s);
 //        sortStack(s);
 //        int k = s.size()/2 + 1;
 //        deleteMidOfStack(s, k);
-        reverseStack(s);
-        System.out.println(s);
+//        reverseStack(s);
+//        System.out.println(s);
+
+        System.out.println(kthGrammar(4, 6));
     }
 
 //----------Following problems are from Aditya verma, unless specified----------
 
+    public static int kthGrammar(int n, int k) {
+//        IBH -- see copy.
+        if (n==1)   return 0;
+
+        int len = (int) Math.pow(2, n-1);
+        int mid = len/2;
+
+        if(k <= mid)
+            return kthGrammar(n-1, k);
+
+        else
+            return kthGrammar(n-1, k-mid) == 0 ? 1 : 0;
+    }
 
     public static void reverseStack(Stack<Integer> s) {
 //        H : rev(s) --> reverses the stack
