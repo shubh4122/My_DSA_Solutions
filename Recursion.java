@@ -1,9 +1,6 @@
 package DSA;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Stack;
+import java.util.*;
 
 public class Recursion {
     public static void main(String[] args) {
@@ -44,12 +41,58 @@ public class Recursion {
 
 //        System.out.println(kthGrammar(4, 6));
 
-        powerSet("abc", "");
+//        powerSet("abc", "");
+
+        permutationSpaces("abc", "");
+        System.out.println("--------------------------------------");
+        System.out.println(returnPermutationSpaces("abc", ""));
     }
 
 //----------Following problems are from Aditya verma, unless specified----------
 
+    public static ArrayList<String> returnPermutationSpaces(String ip, String op) {
+//        This function is same as permutationSpaces, except that it returns an arraylist.
+        ArrayList<String> a = new ArrayList<>();
+
+        if (ip.isEmpty()) {
+            a.add(op);
+            return a;
+        }
+
+        if (op.isEmpty())
+            a.addAll(returnPermutationSpaces(ip.substring(1), Character.toString(ip.charAt(0))));
+
+        else {
+//            Char with space
+            a.addAll(returnPermutationSpaces(ip.substring(1), op+" "+ip.charAt(0)));
+//            Char without space
+            a.addAll(returnPermutationSpaces(ip.substring(1), op+ip.charAt(0)));
+        }
+
+        return a;
+    }
+
+    public static void permutationSpaces(String ip, String op) {
+        if (ip.isEmpty()) {
+            System.out.println(op);
+            return;
+        }
+
+//        this is done to handle the first call, where there is no other choice than putting no space before 1st char
+//        Eg: for ip = abc, this step would do : op = a, ip = bc. Then we have regular recursive tree code.
+        if (op.isEmpty())
+            permutationSpaces(ip.substring(1), Character.toString(ip.charAt(0)));
+
+        else {
+//            Char with space
+            permutationSpaces(ip.substring(1), op+" "+ip.charAt(0));
+//            Char without space
+            permutationSpaces(ip.substring(1), op+ip.charAt(0));
+        }
+    }
+
     public static void powerSet(String ip, String op) {
+//        Subset == Powerset
 //        ip - input / op - output --> I/O Mehtod
         if (ip.equals("")){
             System.out.println(op);
