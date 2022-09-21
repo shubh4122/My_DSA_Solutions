@@ -42,10 +42,27 @@ public class Recursion {
 //        reverseStack(s);
 //        System.out.println(s);
 
-        System.out.println(kthGrammar(4, 6));
+//        System.out.println(kthGrammar(4, 6));
+
+        powerSet("abc", "");
     }
 
 //----------Following problems are from Aditya verma, unless specified----------
+
+    public static void powerSet(String ip, String op) {
+//        ip - input / op - output --> I/O Mehtod
+        if (ip.equals("")){
+            System.out.println(op);
+            return;
+        }
+
+//      CHOICE 1 -->  Not taking the first letter of input
+        powerSet(ip.substring(1), op);
+
+//      CHOICE 2 --> Taking the first letter of input
+        powerSet(ip.substring(1), op+ip.charAt(0));
+
+    }
 
     public static int kthGrammar(int n, int k) {
 //        IBH -- see copy.
