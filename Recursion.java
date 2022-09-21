@@ -43,12 +43,27 @@ public class Recursion {
 
 //        powerSet("abc", "");
 
-        permutationSpaces("abc", "");
-        System.out.println("--------------------------------------");
-        System.out.println(returnPermutationSpaces("abc", ""));
+//        permutationSpaces("abc", "");
+//        System.out.println("--------------------------------------");
+//        System.out.println(returnPermutationSpaces("abc", ""));
+
+        permutationWithCaseChange("abc", "");
     }
 
 //----------Following problems are from Aditya verma, unless specified----------
+
+    public static void permutationWithCaseChange(String ip, String op) {
+//        We assume input is completely in lowercase
+
+        if (ip.isEmpty()){
+            System.out.println(op);
+            return;
+        }
+
+        permutationWithCaseChange(ip.substring(1), op+Character.toString(ip.charAt(0)).toUpperCase());
+        permutationWithCaseChange(ip.substring(1), op+Character.toString(ip.charAt(0)));
+
+    }
 
     public static ArrayList<String> returnPermutationSpaces(String ip, String op) {
 //        This function is same as permutationSpaces, except that it returns an arraylist.
