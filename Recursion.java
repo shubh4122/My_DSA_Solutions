@@ -47,10 +47,129 @@ public class Recursion {
 //        System.out.println("--------------------------------------");
 //        System.out.println(returnPermutationSpaces("abc", ""));
 
-        permutationWithCaseChange("abc", "");
+//        permutationWithCaseChange("abc", "");
+
+//        System.out.println(letterCasePermutation("a1B2", ""));
+
+//        System.out.println(generateBalancedParenthesis(3,3,""));
+//        System.out.println(NBitBinary(4, 4, 4, ""));
+//        System.out.println(josephusProb(40, 7));
+
+        int n = 40, k = 7;
+        ArrayList<Integer> arr = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            arr.add(i+1);
+        }
+
+        System.out.println(josephusProbRecursive(arr, k, 0));
     }
 
+
 //----------Following problems are from Aditya verma, unless specified----------
+
+    public static int josephusProbRecursive(ArrayList<Integer> arr, int k, int curr) {
+//        H : jPR(arr, k, curr) --> returns safe posn in the circle
+//        I : jPR(arr, k, curr) --> arr.remove(killat)
+//                                  jPR(arr, k, killat)
+//        BC : if arr.size == 1, return arr[0]
+
+        if (arr.size() == 1)
+            return arr.get(0);
+
+        int killAt = (curr + k - 1) % arr.size();
+        arr.remove(killAt);
+        return josephusProbRecursive(arr, k, killAt);
+    }
+
+    public static int josephusProb(int n, int k) {
+        ArrayList<Integer> arr = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            arr.add(i+1);
+        }
+
+//        this is current position
+        int curr = 0;
+        while (arr.size() > 1) {
+            int killAt = (curr + k - 1) % arr.size();
+
+            arr.remove(killAt);
+            curr = killAt;
+        }
+
+        return arr.get(0);
+    }
+
+    public static List<String> NBitBinary(int n, int ones, int zeros, String op) {
+        List<String> list = new ArrayList<>();
+        if (ones+zeros == n) {
+            list.add(op);
+            return list;
+        }
+
+        if (ones == zeros) {
+            list.addAll(NBitBinary(n, ones - 1, zeros, op + "1"));
+        }
+        else {
+            list.addAll(NBitBinary(n, ones-1, zeros, op+"1"));
+            list.addAll(NBitBinary(n, ones, zeros-1, op+"0"));
+        }
+        return list;
+    }
+
+
+//  This is an example of Extended Ip/Op method. Where inp and out data types are not similar
+    public static List<String> generateBalancedParenthesis(int o, int c, String op) {
+//        o = opening bracket count, c = closing bracket count
+        List<String> list = new ArrayList<>();
+
+        if (o == 0 && c == 0) {
+            list.add(op);
+            return list;
+        }
+//      For cases where we only have single choices in the tree
+//      case 1 -> o = c
+        if (o == c) {
+            list.addAll(generateBalancedParenthesis(o-1, c, op+"("));
+        }
+
+//      case 2 -> o = 0
+        else if (o == 0) {
+            list.addAll(generateBalancedParenthesis(o, c-1, op+")"));
+        }
+
+//      General case, with 2 choices. First taking '(' and then ')' choice.
+        else {
+            list.addAll(generateBalancedParenthesis(o-1, c, op+"("));
+            list.addAll(generateBalancedParenthesis(o, c-1, op+")"));
+        }
+
+
+        return list;
+    }
+
+    public static ArrayList<String> letterCasePermutation(String ip, String op) {
+//        Input here can have lowercase, uppercase letters and digits
+        ArrayList<String> a = new ArrayList<>();
+        if (ip.isEmpty()) {
+            a.add(op);
+            return a;
+        }
+
+        char c = ip.charAt(0);
+        if (!Character.isDigit(c)) {
+            a.addAll(letterCasePermutation(ip.substring(1), op+ changeCase(c)));
+            a.addAll(letterCasePermutation(ip.substring(1), op + c));
+        }
+        else {
+            a.addAll(letterCasePermutation(ip.substring(1), op+c));
+        }
+        return a;
+    }
+
+    private static Character changeCase(char character) {
+        if (Character.isLowerCase(character))   return Character.toUpperCase(character);
+        else    return Character.toLowerCase(character);
+    }
 
     public static void permutationWithCaseChange(String ip, String op) {
 //        We assume input is completely in lowercase
