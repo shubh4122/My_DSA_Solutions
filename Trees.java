@@ -1,7 +1,6 @@
 package DSA;
 
-import java.util.ArrayList;
-import java.util.Stack;
+import java.util.*;
 
 class Node {
     int data;
@@ -14,27 +13,27 @@ class Node {
 
 public class Trees {
     public static void main(String[] args) {
-//        Node root = new Node(10);
-//        root.left = new Node(20);
-//        root.right = new Node(30);
-//        root.left.left = new Node(40);
-//        root.left.right = new Node(50);
-//        root.right.right = new Node(60);
-//        root.left.right.left = new Node(70);
-//        root.left.right.right = new Node(80);
+        Node root = new Node(10);
+        root.left = new Node(20);
+        root.right = new Node(30);
+        root.left.left = new Node(40);
+        root.left.right = new Node(50);
+        root.right.right = new Node(60);
+        root.left.right.left = new Node(70);
+        root.left.right.right = new Node(80);
 
         //BST
-        Node root = new Node(10);
-        root.left = new Node(5);
-        root.right = new Node(15);
-        root.right.left = new Node(12);
-        root.right.right = new Node(18);
+//        Node root = new Node(10);
+//        root.left = new Node(5);
+//        root.right = new Node(15);
+//        root.right.left = new Node(12);
+//        root.right.right = new Node(18);
 
 //        System.out.println(insertBSTRecursive(root, 11));
-        System.out.println(insertBSTIterative(root, 8).data);
+//        System.out.println(insertBSTIterative(root, 8).data);
 
 //--------Traversals/Printing of tree--------
-        inorder(root);
+//        inorder(root);
 //        System.out.println();
 //        inorderIterative(root);
 //        preorderIterative(root);
@@ -54,6 +53,10 @@ public class Trees {
 
 //--------BFS tree Traversal--------
 //        levelOrderTraversal(root);
+//        System.out.println();
+//        bfsEfficient(root);
+        bfsEfficientLineByLine(root);
+        System.out.println(bfsEfficientLbLReturn(root));
 
 //--------Size of tree(No. of nodes)--------
 //        System.out.println(size(root));
@@ -183,8 +186,97 @@ public class Trees {
 
 
 //  Breadth First Search
+
+    public static ArrayList<ArrayList<Integer>> bfsEfficientLbLReturn(Node root) {
+        Queue<Node> q = new LinkedList<>();
+        q.offer(root);
+        q.offer(null);
+
+        ArrayList<ArrayList<Integer>> a = new ArrayList<ArrayList<Integer>>();
+        int h = height(root);
+        for (int i = 0; i < h; i++) {
+            a.add(new ArrayList<Integer>());
+        }
+        int i = 0;
+
+        while (!q.isEmpty()) {
+            Node temp = q.poll();
+
+//          Here we need to use poll and offer, coz add and remove will through Exception for null
+            if (temp == null) {
+                if (!q.isEmpty())
+                    q.offer(null);
+
+                i++;
+                // System.out.println();
+            }
+            else {
+                // System.out.print(temp.data + " ");
+                a.get(i).add(temp.data);
+
+                if (temp.left != null)
+                    q.offer(temp.left);
+                if (temp.right != null)
+                    q.offer(temp.right);
+
+            }
+
+        }
+
+        return a;
+    }
+
+    public static void bfsEfficientLineByLine(Node root) {
+//        TC : O(n)
+
+//        Queue<Node> q = new ArrayDeque<>();
+
+        Queue<Node> q = new LinkedList<>();
+        q.offer(root);
+        q.offer(null);
+
+        while (!q.isEmpty()) {
+            Node temp = q.poll();
+
+//          Here we need to use poll and offer, coz add and remove will through Exception for null
+            if (temp == null) {
+                if (!q.isEmpty())
+                    q.offer(null);
+                System.out.println();
+            }
+
+            else {
+                System.out.print(temp.data + " ");
+
+                if (temp.left != null)
+                    q.offer(temp.left);
+                if (temp.right != null)
+                    q.offer(temp.right);
+
+            }
+
+        }
+    }
+
+    public static void bfsEfficient(Node root) {
+//        TC : O(n)
+
+        Queue<Node> q = new ArrayDeque<>();
+        q.add(root);
+
+        while (!q.isEmpty()) {
+            Node temp = q.remove();
+            System.out.print(temp.data+" ");
+
+            if (temp.left != null)
+                q.add(temp.left);
+            if (temp.right != null)
+                q.add(temp.right);
+        }
+    }
     public static void levelOrderTraversal(Node root) {
         //Very ineficient Solution. See more efficient solution in Video and do.
+//        TC : O(hn)
         for (int k = 0; k < height(root); k++) {
             nodesAtKDistance(root, k);
         }
