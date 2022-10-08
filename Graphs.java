@@ -54,6 +54,29 @@ public class Graphs {
 
 //        als0 change value of n when changing graph!!
         System.out.println(bfs(n, graph));
+        System.out.println(dfsOfGraph(n, graph));
+    }
+
+    public static ArrayList<Integer> dfsOfGraph(int n, ArrayList<ArrayList<Integer>> graph) {
+        boolean[] vis = new boolean[n];
+        ArrayList<Integer> res = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            if (!vis[i])
+                dfs(graph, vis, i, res);
+        }
+        return res;
+    }
+
+    private static void dfs(ArrayList<ArrayList<Integer>> graph, boolean[] vis, int temp, ArrayList<Integer> res) {
+        if (vis[temp])
+            return;
+
+        res.add(temp);
+        vis[temp] = true;
+
+        for (int val : graph.get(temp)) {
+            dfs(graph, vis, val, res);
+        }
     }
 
     public static ArrayList<Integer> bfs(int n, ArrayList<ArrayList<Integer>> graph) {
