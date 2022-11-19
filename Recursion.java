@@ -42,6 +42,10 @@ public class Recursion {
 //        System.out.println(kthGrammar(4, 6));
 
 //        powerSet("abc", "");
+        ArrayList<String> a = new ArrayList<>();
+        powerSetLexicographically("abc", "", a);
+        Collections.sort(a);
+        System.out.println(a);
 
 //        permutationSpaces("abc", "");
 //        System.out.println("--------------------------------------");
@@ -55,13 +59,14 @@ public class Recursion {
 //        System.out.println(NBitBinary(4, 4, 4, ""));
 //        System.out.println(josephusProb(40, 7));
 
-        int n = 40, k = 7;
-        ArrayList<Integer> arr = new ArrayList<>(n);
-        for (int i = 0; i < n; i++) {
-            arr.add(i+1);
-        }
 
-        System.out.println(josephusProbRecursive(arr, k, 0));
+//        int n = 40, k = 7;
+//        ArrayList<Integer> arr = new ArrayList<>(n);
+//        for (int i = 0; i < n; i++) {
+//            arr.add(i+1);
+//        }
+//
+//        System.out.println(josephusProbRecursive(arr, k, 0));
     }
 
 
@@ -225,7 +230,24 @@ public class Recursion {
         }
     }
 
-    public static void powerSet(String ip, String op) {
+    public static void powerSetLexicographically(String ip, String op, ArrayList<String> a) {
+//        Subset == Powerset
+//        ip - input / op - output --> I/O Mehtod
+        if (ip.equals("")){
+//            System.out.println(op);
+            a.add(op);
+            return;
+        }
+
+//      CHOICE 1 -->  Not taking the first letter of input
+        powerSetLexicographically(ip.substring(1), op, a);
+
+//      CHOICE 2 --> Taking the first letter of input
+        powerSetLexicographically(ip.substring(1), op+ip.charAt(0), a);
+
+    }
+
+    public static void powerSetLexicographically(String ip, String op) {
 //        Subset == Powerset
 //        ip - input / op - output --> I/O Mehtod
         if (ip.equals("")){
@@ -234,10 +256,10 @@ public class Recursion {
         }
 
 //      CHOICE 1 -->  Not taking the first letter of input
-        powerSet(ip.substring(1), op);
+        powerSetLexicographically(ip.substring(1), op);
 
 //      CHOICE 2 --> Taking the first letter of input
-        powerSet(ip.substring(1), op+ip.charAt(0));
+        powerSetLexicographically(ip.substring(1), op+ip.charAt(0));
 
     }
 
