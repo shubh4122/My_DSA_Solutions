@@ -1,13 +1,12 @@
 package DSA;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class Graphs {
     public static void main(String[] args) {
 //        Can create a graph if required. Didnt create for now, as it is tedious and lengthy process
         ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
-        int n = 4; //number of nodes
+        int n = 6; //number of nodes
         for (int i = 0; i < n; i++) {
             graph.add(new ArrayList<Integer>());
         }
@@ -84,15 +83,117 @@ public class Graphs {
 
 //        System.out.println(isBipartiteDFS(graph, n));
 
-//        Graph 6
-        graph.get(0).add(2);
-        graph.get(3).add(2);
+//        Graph 6 - Directed Graph
+//        graph.get(0).add(2);
+//        graph.get(3).add(2);
 
-        System.out.println(Arrays.toString(topoSort(graph, n)));
+//        Graph 7 - Directed Graph
+//        graph.get(2).add(3);
+//        graph.get(3).add(1);
+//        graph.get(4).add(0);
+//        graph.get(4).add(1);
+//        graph.get(5).add(0);
+//        graph.get(5).add(2);
+
+        System.out.println(Arrays.toString(topoDFS(graph, n)));
+        System.out.println(Arrays.toString(topoBFS(graph, n)));
     }
 
 
-    public static int[] topoSort(ArrayList<ArrayList<Integer>> graph, int n) {
+    public static boolean isCyclicBFS(ArrayList<ArrayList<Integer>> graph, int n) {
+//      Using Kahn's algo
+//      SAME CODE as topoBFS. almost
+
+//      Data structures Required
+        int[] indegree = new int[n];
+        int[] ans = new int[n];
+        Queue<Integer> q = new ArrayDeque<>();
+
+//      Calculating INDEGREE
+        for (int node = 0; node < n; node++) {
+            for (int adjNode : graph.get(node)) {
+                indegree[adjNode]++;
+            }
+        }
+
+//      whosever in-deg is 0, put them in Queue
+        for (int i = 0; i < indegree.length; i++) {
+            if (indegree[i] == 0)
+                q.add(i);
+        }
+
+//      Starting the BFS now.
+        int i = 0;
+//      This count variable keeps count of how many nodes were popped out of queue
+        int count = 0;
+        while (!q.isEmpty()) {
+//          pop the front of Queue. and store it.
+            int temp = q.remove();
+            ans[i] = temp;
+            i++;
+//          increment count with each pop. To count nodes
+            count++;
+
+//          Traverse all its Adj nodes
+            for (int adjNode : graph.get(temp)) {
+                if (indegree[adjNode] != 0) { // THIS is REDUNDANT. Coz, this will always be >= 0. this is simply the count of nodes pointing to this node. THINK!
+                    indegree[adjNode]--;
+                    if (indegree[adjNode] == 0)
+                        q.add(adjNode);
+                }
+            }
+        }
+
+//      If count(or no. of popped nodes = n) then topo sort sequence generated, else not
+        if (count == n) {
+            return false;
+        }
+        return true;
+
+    }
+
+//  KAHN'S Algorithm
+    public static int[] topoBFS(ArrayList<ArrayList<Integer>> graph, int n) {
+//      Data structures Required
+        int[] indegree = new int[n];
+        int[] ans = new int[n];
+        Queue<Integer> q = new ArrayDeque<>();
+
+//      Calculating INDEGREE
+        for (int node = 0; node < n; node++) {
+            for (int adjNode : graph.get(node)) {
+                indegree[adjNode]++;
+            }
+        }
+
+//      whosever in-deg is 0, put them in Queue
+        for (int i = 0; i < indegree.length; i++) {
+            if (indegree[i] == 0)
+                q.add(i);
+        }
+
+//      Starting the BFS now.
+        int i = 0;
+        while (!q.isEmpty()) {
+//          pop the front of Queue. and store it.
+            int temp = q.remove();
+            ans[i] = temp;
+            i++;
+
+//          Traverse all its Adj nodes
+            for (int adjNode : graph.get(temp)) {
+                if (indegree[adjNode] != 0) { // THIS is REDUNDANT. Coz, this will always be >= 0. this is simply the count of nodes pointing to this node. THINK!
+                    indegree[adjNode]--;
+                    if (indegree[adjNode] == 0)
+                        q.add(adjNode);
+                }
+            }
+        }
+
+        return ans;
+    }
+
+    public static int[] topoDFS(ArrayList<ArrayList<Integer>> graph, int n) {
         boolean[] vis = new boolean[n];
 
 //        This stores The final sequence after TOPO sort.
