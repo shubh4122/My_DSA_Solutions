@@ -1,14 +1,13 @@
 package DSA;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Queue;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class Graphs {
     public static void main(String[] args) {
 //        Can create a graph if required. Didnt create for now, as it is tedious and lengthy process
         ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
-        int n = 6; //number of nodes
+        int n = 4; //number of nodes
         for (int i = 0; i < n; i++) {
             graph.add(new ArrayList<Integer>());
         }
@@ -53,33 +52,195 @@ public class Graphs {
 //        graph.get(6).add(4);
 
 //      Graph 4
-        graph.get(0).add(1);
-        graph.get(0).add(3);
-        graph.get(1).add(0);
-        graph.get(1).add(3);
-        graph.get(1).add(4);
-        graph.get(2).add(4);
-        graph.get(2).add(5);
-        graph.get(3).add(0);
-        graph.get(3).add(1);
-        graph.get(3).add(4);
-        graph.get(4).add(1);
-        graph.get(4).add(2);
-        graph.get(4).add(3);
-        graph.get(5).add(2);
+//        graph.get(0).add(1);
+//        graph.get(0).add(3);
+//        graph.get(1).add(0);
+//        graph.get(1).add(3);
+//        graph.get(1).add(4);
+//        graph.get(2).add(4);
+//        graph.get(2).add(5);
+//        graph.get(3).add(0);
+//        graph.get(3).add(1);
+//        graph.get(3).add(4);
+//        graph.get(4).add(1);
+//        graph.get(4).add(2);
+//        graph.get(4).add(3);
+//        graph.get(5).add(2);
 
+
+//        Graph 5
+//        graph.get(0).add(2);
+//        graph.get(0).add(3);
+//        graph.get(1).add(3);
+//        graph.get(2).add(0);
+//        graph.get(2).add(3);
+//        graph.get(3).add(0);
+//        graph.get(3).add(1);
 
 //        als0 change value of n when changing graph!!
-        System.out.println(bfs(n, graph));
-        System.out.println(dfsOfGraph(n, graph));
+//        System.out.println(bfs(n, graph));
+//        System.out.println(dfsOfGraph(n, graph));
 //        System.out.println(detectCycleBFS(n, graph));
+
+//        System.out.println(isBipartiteDFS(graph, n));
+
+//        Graph 6
+        graph.get(0).add(2);
+        graph.get(3).add(2);
+
+        System.out.println(Arrays.toString(topoSort(graph, n)));
+    }
+
+
+    public static int[] topoSort(ArrayList<ArrayList<Integer>> graph, int n) {
+        boolean[] vis = new boolean[n];
+
+//        This stores The final sequence after TOPO sort.
+        Stack<Integer> stack = new Stack<>();
+        int[] ans = new int[n];
+
+        for (int node = 0; node < n; node++) {
+            if (!vis[node]) {
+                topologicalSortDFS(graph, vis, node, stack);
+            }
+        }
+
+//        STACK --> ARR
+//      IMP, coz later size will change after each pop
+//      OR USE WHILE, stack not empty.
+        int size = stack.size();
+        for (int i = 0; i < size; i++) {
+            ans[i] = stack.pop();
+        }
+        return ans;
+    }
+
+    public static void topologicalSortDFS(ArrayList<ArrayList<Integer>> graph, boolean[] vis, int node, Stack<Integer> stack){
+        if (!vis[node]) {
+            vis[node] = true;
+            for (int adjNode : graph.get(node)) {
+                topologicalSortDFS(graph, vis, adjNode, stack);
+            }
+//          Uptil now, completely same as DFS code
+//          Below adding node to stack.
+            stack.push(node);
+        }
+    }
+
+    public static boolean isCyclicDirectedGraph(ArrayList<ArrayList<Integer>> graph, int n) {
+        boolean visited[] = new boolean[n];
+        boolean dfsVisited[] = new boolean[n];
+
+        for (int node = 0; node < n; node++) {
+            if (!visited[node])
+                if (checkCycleDFS(graph, node, visited, dfsVisited))
+                    return true;
+        }
+        return false;
+    }
+
+    public static boolean checkCycleDFS(ArrayList<ArrayList<Integer>> graph, int node, boolean[] visited, boolean[] dfsVisited) {
+//      No Base Condtion here !! IMP HERE
+//      Whenever any node is visited. mark both arrays as visited!
+        visited[node] = true;
+        dfsVisited[node] = true;
+
+//       Now Check each node's Adj nodes, to have both vis = dfsVis = true
+        for (int adjNode : graph.get(node)) {
+            if (!visited[adjNode]) {
+                if (checkCycleDFS(graph, adjNode, visited, dfsVisited))
+                    return true;
+            }
+//          This condition means, vis[adj] = true, and dfsvis[adj] is also TRUE. HENCE CYCLE FOUND
+            else if (dfsVisited[adjNode] == true)
+                return true;
+        }
+
+//      SEE WHAT IT DOES??
+        dfsVisited[node] = false;
+        return false;
+    }
+
+
+    public static boolean isBipartiteDFS(ArrayList<ArrayList<Integer>> graph, int n){
+//      Here thing to NOTE is, we use color arr instead of Visited. Color arr keeps track of both color and visited
+//      0 : Not visited,
+//     -1 : Color 1,
+//      1 : Color 2
+        int[] color = new int[n];
+
+        for (int node = 0; node < n; node++) {
+            if (color[node] == 0 ){//not visited
+                if (colorGraphDFS(graph, color, node, -1) == false)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean colorGraphDFS(ArrayList<ArrayList<Integer>> graph, int[] color, int node, int parent) {
+
+        if (color[node] == 0) { //not visited
+            System.out.println("dfs("+node+")");
+            if (parent == -1)
+                color[node] = 1;
+            else
+                color[node] = -color[parent];
+
+            for (int adjNode : graph.get(node)) {
+//                PUT THIS IN IF AND NOTE THIS THING!! FOR MORE SEE CYCLE DETECTION IN DFS
+//                NOTE. if function returns something. Dont directly call it.
+//                AND DONT simply return after calling. CHECK true or false. IN GRAPH
+                if(!colorGraphDFS(graph, color, adjNode, node))
+                    return false;
+            }
+        }
+
+        else {//colored
+            if (color[parent] == color[node])
+                return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isBipartiteGraphBFS(ArrayList<ArrayList<Integer>> graph, int n) {
+//      Here thing to NOTE is, we use color arr instead of Visited. Color arr keeps track of both color and visited
+//      0 : Not visited,
+//     -1 : Color 1,
+//      1 : Color 2
+        int[] color = new int[n];
+        Queue<Integer> q = new ArrayDeque<>();
+
+        for (int node = 0; node < n; node++) {
+            if (color[node] == 0) //not visited
+            {
+                q.add(node);
+                color[node] = 1;
+
+                while (!q.isEmpty()) {
+                    int parent = q.remove();
+//                    int previousNode = parent;
+                    for (int adjNode : graph.get(parent)) {
+                        if (color[adjNode] == 0) { //not visited
+                            q.add(adjNode);
+                            color[adjNode] = -(color[parent]);
+                        }
+//                      This checks if the current node has it's adjNode(parent) with same color
+                        if (color[parent] == color[adjNode])
+                            return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     public static boolean detectCycleDfs(int n, ArrayList<ArrayList<Integer>> graph) {
         boolean[] vis = new boolean[n];
         for (int i = 0; i < n; i++) {
             if (!vis[i])
-//              NOTE: we return and terminate function only when cycle found.
+//              V IMP NOTE: we return and terminate function only when cycle found.
 //              We should not return when its false. Coz it will terminate the funciton
 //              and wont check any further. Hence RETURN ONLY WHEN TRUE!!!
                 if(dfsCycleDetection(graph, vis, i, -1))
