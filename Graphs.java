@@ -103,6 +103,7 @@ public class Graphs {
     }
 
 //    Use this to convert edges[][] to adjacency list. when not given directly.
+//    FOR DIRECTED GRAPHS, JUST ADD EDGES ONE WAY.
     public static ArrayList<ArrayList<Integer>> edgesToList(int[][] edges, int n) {
         ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
         for (int i = 0; i < n; i++) {
@@ -125,57 +126,64 @@ public class Graphs {
 
     public static void shortestDist_Undirected_UnitWt(ArrayList<ArrayList<Integer>> graph, int n, int[] dist, int src) {
 
-        Queue<Integer> q = new ArrayDeque<>();
-        boolean[] vis = new boolean[n];
-//      If a node isn't reachable from src, its dist from it be -1
-        Arrays.fill(dist, -1);
+    //        M1 gfg
 
-//      Add src to Q, mark it vis, and its dist from itself as 0
-        q.add(src);
-        vis[src] = true;
-        dist[src] = 0;
-
-        while(!q.isEmpty()) {
-            int parent = q.remove();
-            for (int adjNode : graph.get(parent)) {
-                if (!vis[adjNode]) {
-//                  Put it in Q, mark it vis, and write its dist
-                    q.add(adjNode);
-                    vis[adjNode] = true;
-                    dist[adjNode] = dist[parent] + 1;
-                }
-            }
-        }
-
-
-////      No vis arr required, As multiple visits can be done to a node, and then we see whose dist is min!!
 //        Queue<Integer> q = new ArrayDeque<>();
-////      Replace each val with (infinity) and then replace it if a dist lower than that occurs.
-//        Arrays.fill(dist, Integer.MAX_VALUE);
+//        boolean[] vis = new boolean[n];
+////      If a node isn't reachable from src, its dist from it be -1
+//        Arrays.fill(dist, -1);
 //
+////      Add src to Q, mark it vis, and its dist from itself as 0
 //        q.add(src);
+//        vis[src] = true;
 //        dist[src] = 0;
 //
 //        while(!q.isEmpty()) {
 //            int parent = q.remove();
-//
 //            for (int adjNode : graph.get(parent)) {
-////              Check if the dist to adjNode from src is less than its stored Dist, then replace. Else ignore
-////              dist[parent] is dist of parent from src
-//                int newDist = dist[parent] + 1;
-//                if (newDist < dist[adjNode]){
-//                    dist[adjNode] = newDist;
-////                  only that adjNode must enter queue, whose new dist < its current dist
+//                if (!vis[adjNode]) {
+////                  Put it in Q, mark it vis, and write its dist
 //                    q.add(adjNode);
+//                    vis[adjNode] = true;
+//                    dist[adjNode] = dist[parent] + 1;
 //                }
-////              else ignore newDist.
 //            }
 //        }
-//
-//        for (int i = 0; i < dist.length; i++) {
-//            if (dist[i] == Integer.MAX_VALUE)
-//                dist[i] = -1;
-//        }
+
+
+
+//        M2
+//          Below is strivers solution. See
+
+//      No vis arr required, As multiple visits can be done to a node, and then we see whose dist is min!!
+        Queue<Integer> q = new ArrayDeque<>();
+//      Replace each val with (infinity) and then replace it if a dist lower than that occurs.
+        Arrays.fill(dist, Integer.MAX_VALUE);
+
+        q.add(src);
+        dist[src] = 0;
+
+        while(!q.isEmpty()) {
+            int parent = q.remove();
+
+            for (int adjNode : graph.get(parent)) {
+//              Check if the dist to adjNode from src is less than its stored Dist, then replace. Else ignore
+//              dist[parent] is dist of parent from src
+                int newDist = dist[parent] + 1;
+                if (newDist < dist[adjNode]){
+                    dist[adjNode] = newDist;
+//                  only that adjNode must enter queue, whose new dist </<= its current dist.
+//                  REASON in copy. why its inside if.
+                    q.add(adjNode);
+                }
+//              else ignore newDist.
+            }
+        }
+
+        for (int i = 0; i < dist.length; i++) {
+            if (dist[i] == Integer.MAX_VALUE)
+                dist[i] = -1;
+        }
     }
 
 
