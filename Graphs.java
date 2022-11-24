@@ -95,8 +95,87 @@ public class Graphs {
 //        graph.get(5).add(0);
 //        graph.get(5).add(2);
 
-        System.out.println(Arrays.toString(topoDFS(graph, n)));
-        System.out.println(Arrays.toString(topoBFS(graph, n)));
+//        System.out.println(Arrays.toString(topoDFS(graph, n)));
+//        System.out.println(Arrays.toString(topoBFS(graph, n)));
+
+        int[][] edges = {{0,1},{0,3},{3,4},{4 ,5},{5, 6},{1,2},{2,6},{6,7},{7,8},{6,8}} ;
+        System.out.println(edgesToList(edges, 9));
+    }
+
+//    Use this to convert edges[][] to adjacency list. when not given directly.
+    public static ArrayList<ArrayList<Integer>> edgesToList(int[][] edges, int n) {
+        ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<Integer>());
+        }
+
+        for (int i = 0; i < edges.length; i++) {
+//          For self loops. Prevents repetition of nodes. like 3-3, 3-5. So without this it will be. 3-3,3,5. 2 times 3.
+            if (edges[i][0] == edges[i][1]) {
+                graph.get(edges[i][0]).add(edges[i][1]);
+                continue;
+            }
+//          Coz in undirected graphs, 0-1  --> vertex is both from 0 to 1, and 1 to 0
+            graph.get(edges[i][0]).add(edges[i][1]);
+            graph.get(edges[i][1]).add(edges[i][0]);
+        }
+//        System.out.println(graph);
+        return graph;
+    }
+
+    public static void shortestDist_Undirected_UnitWt(ArrayList<ArrayList<Integer>> graph, int n, int[] dist, int src) {
+
+        Queue<Integer> q = new ArrayDeque<>();
+        boolean[] vis = new boolean[n];
+//      If a node isn't reachable from src, its dist from it be -1
+        Arrays.fill(dist, -1);
+
+//      Add src to Q, mark it vis, and its dist from itself as 0
+        q.add(src);
+        vis[src] = true;
+        dist[src] = 0;
+
+        while(!q.isEmpty()) {
+            int parent = q.remove();
+            for (int adjNode : graph.get(parent)) {
+                if (!vis[adjNode]) {
+//                  Put it in Q, mark it vis, and write its dist
+                    q.add(adjNode);
+                    vis[adjNode] = true;
+                    dist[adjNode] = dist[parent] + 1;
+                }
+            }
+        }
+
+
+////      No vis arr required, As multiple visits can be done to a node, and then we see whose dist is min!!
+//        Queue<Integer> q = new ArrayDeque<>();
+////      Replace each val with (infinity) and then replace it if a dist lower than that occurs.
+//        Arrays.fill(dist, Integer.MAX_VALUE);
+//
+//        q.add(src);
+//        dist[src] = 0;
+//
+//        while(!q.isEmpty()) {
+//            int parent = q.remove();
+//
+//            for (int adjNode : graph.get(parent)) {
+////              Check if the dist to adjNode from src is less than its stored Dist, then replace. Else ignore
+////              dist[parent] is dist of parent from src
+//                int newDist = dist[parent] + 1;
+//                if (newDist < dist[adjNode]){
+//                    dist[adjNode] = newDist;
+////                  only that adjNode must enter queue, whose new dist < its current dist
+//                    q.add(adjNode);
+//                }
+////              else ignore newDist.
+//            }
+//        }
+//
+//        for (int i = 0; i < dist.length; i++) {
+//            if (dist[i] == Integer.MAX_VALUE)
+//                dist[i] = -1;
+//        }
     }
 
 
