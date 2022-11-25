@@ -3,6 +3,8 @@ package DSA;
 import java.util.*;
 
 public class Graphs {
+    public static final int INFINITY = Integer.MAX_VALUE;
+
     public static void main(String[] args) {
 //        Can create a graph if required. Didnt create for now, as it is tedious and lengthy process
         ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
@@ -102,6 +104,130 @@ public class Graphs {
         System.out.println(edgesToList(edges, 9));
     }
 
+//  This is for graphs, where we have weights. So it stores the destination node and the weights
+static class Pair{
+        int node, weight;
+        Pair(int node, int weight) {
+            this.node = node;
+            this.weight = weight;
+        }
+    }
+
+
+    public static ArrayList<ArrayList<Pair>> edgesToList_Directed_Weighted(int[][] edges, int n) {
+        ArrayList<ArrayList<Pair>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<Pair>());
+        }
+
+        for (int i = 0; i < edges.length; i++) {
+            graph.get(edges[i][0]).add(new Pair(edges[i][1], edges[i][2]));
+        }
+//        System.out.println(graph);
+        return graph;
+    }
+
+    public static void shortestDist_DAG_Weighted_using_TOPOSORT(ArrayList<ArrayList<Pair>> graph, int n, int[] dist, int src) {
+//        |----------------------------------------------|
+//        |        Step 1 - TOPO SORT, for sequence      |
+//        |----------------------------------------------|
+
+        //This solution is slightly different from my solution.
+        //It uses TOPOSORT for the order in which nodes are visited
+        int[] topoSort = new int[n];
+        boolean[] vis = new boolean[n];
+        Stack<Integer> stack = new Stack<>();
+
+        for (int node = 0; node < n; node++) {
+            if (!vis[node])
+                topoDFS_weighted(graph, vis, node, stack);
+        }
+
+
+//        |--------------------------------------------------------|
+//        |        ******** FINDING SHORTEST PATH ********         |
+//        |                                                        |
+//        |      Step 2 - Pop from stack, and visit this node.     |
+//        |               Update its dist, if lesser.              |
+//        |               Visit, its immediate adjNodes            |
+//        |--------------------------------------------------------|
+
+        Arrays.fill(dist, INFINITY);
+        dist[src] = 0;
+
+        while (!stack.isEmpty()) {
+            int top = stack.pop(); // elem popped will be in topo order. i.e. 1st popped elem points to other following it.
+
+            //NOTE : this if condition is for, if src and TOP of Stack aren't same.
+            //We'll start doing the inner process, only after the src is popped.
+            if (dist[top] != INFINITY) { //V IMP.
+                for (Pair adjNode : graph.get(top)) {
+                    int newDist = dist[top] + adjNode.weight; //adjNode.weight means, weight req to reach adj from top
+
+                    if (newDist < dist[adjNode.node]){ // replace with lesser distance
+                        dist[adjNode.node] = newDist;
+                    }
+                }
+            }
+        }
+
+        //This is just to replace INF with -1. QUES Requirement
+        for (int i = 0; i < dist.length; i++) {
+            if (dist[i] == INFINITY)
+                dist[i] = -1;
+        }
+
+    }
+
+    //below toposort is for directed graphs, where we have Pair and not int.
+    public static void topoDFS_weighted(ArrayList<ArrayList<Pair>> graph, boolean[] vis, int node, Stack<Integer> stack){
+        if (!vis[node]) {
+            vis[node] = true;
+            for (Pair adjNode : graph.get(node)) {
+                topoDFS_weighted(graph, vis, adjNode.node, stack);
+            }
+//          Uptil now, completely same as DFS code
+//          Below adding node to stack.
+            stack.push(node);
+        }
+    }
+
+
+//------------------MY SOLUTION - DIFFERENT FROM ALL SOLUTIONS ONLINE!!------------------
+//    IT is same as for undirected unit weight graphs, with slight changes. Instead of 1, add wt.
+    public static void shortestDist_DAG_Weighted(ArrayList<ArrayList<Pair>> graph, int n, int[] dist, int src) {
+//      No vis arr required, As multiple visits can be done to a node, and then we see whose dist is min!!
+        Queue<Integer> q = new ArrayDeque<>();
+//      Replace each val with (infinity) and then replace it if a dist lower than that occurs.
+        Arrays.fill(dist, INFINITY);
+
+        q.add(src);
+        dist[src] = 0;
+
+        while(!q.isEmpty()) {
+            int parent = q.remove();
+
+            for (Pair adjNode : graph.get(parent)) {
+//              Check if the dist to adjNode from src is less than its stored Dist, then replace. Else ignore
+//              dist[parent] is dist of parent from src
+                int newDist = dist[parent] + adjNode.weight; //replaced 1 with the weight.
+
+                if (newDist < dist[adjNode.node]){
+                    dist[adjNode.node] = newDist;
+//                  only that adjNode must enter queue, whose new dist </<= its current dist.
+//                  REASON in copy. why its inside if.
+                    q.add(adjNode.node);
+                }
+//              else ignore newDist.
+            }
+        }
+
+        for (int i = 0; i < dist.length; i++) {
+            if (dist[i] == INFINITY)
+                dist[i] = -1;
+        }
+    }
+
 //    Use this to convert edges[][] to adjacency list. when not given directly.
 //    FOR DIRECTED GRAPHS, JUST ADD EDGES ONE WAY.
     public static ArrayList<ArrayList<Integer>> edgesToList(int[][] edges, int n) {
@@ -158,7 +284,7 @@ public class Graphs {
 //      No vis arr required, As multiple visits can be done to a node, and then we see whose dist is min!!
         Queue<Integer> q = new ArrayDeque<>();
 //      Replace each val with (infinity) and then replace it if a dist lower than that occurs.
-        Arrays.fill(dist, Integer.MAX_VALUE);
+        Arrays.fill(dist, INFINITY);
 
         q.add(src);
         dist[src] = 0;
@@ -181,7 +307,7 @@ public class Graphs {
         }
 
         for (int i = 0; i < dist.length; i++) {
-            if (dist[i] == Integer.MAX_VALUE)
+            if (dist[i] == INFINITY)
                 dist[i] = -1;
         }
     }
