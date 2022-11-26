@@ -121,6 +121,48 @@ static class Pair implements Comparator<Pair>{
     }
 }
 
+
+    public static int[] bellman_ford(ArrayList<ArrayList<Integer>> edges, int n, int src) {
+        int[] dist = new int[n];
+        Arrays.fill(dist, INFINITY);
+        dist[src] = 0;
+
+/*
+        |----------------------------------------------|
+        |               Relax n-1 times                |
+        |----------------------------------------------|
+*/
+
+        for (int i = 0; i < n - 1; i++) {
+            relax(edges, dist, false);
+        }
+
+        //This is nth call to relax. If now it enters the below IF in Relax. where dist changes. It will tell me, it changed.
+        boolean isNegCycle = relax(edges, dist, true);
+        if (isNegCycle)
+            return new int[]{-1};
+
+        return dist;
+    }
+
+    private static boolean relax(ArrayList<ArrayList<Integer>> edges, int[] dist, boolean isNthCall) {
+        //edge ->  (u, v, w).  u: parent. v : adjNode. w : weight
+        for (ArrayList<Integer> edge : edges) {
+            int u = edge.get(0);
+            int v = edge.get(1);
+            int w = edge.get(2);
+
+            int newDist = dist[u] + w;
+            if (dist[u] != INFINITY && newDist < dist[v]) { // for nodes which havent been reached yet. we wont relax them.
+                dist[v] = newDist;
+                //this is solely done for the nth iteration, finding presence of negative cycle.
+                if (isNthCall)
+                    return true;// true coz, this is Nth call, and it entered here which means DIST[] is changed.
+            }
+        }
+        return false;//no negative cycle
+    }
+
     public static int[] dijkstra(ArrayList<ArrayList<ArrayList<Integer>>> graph, int n, int src) {
         //Create Priority Queue
         PriorityQueue<Pair> pq = new PriorityQueue<>(new Pair()); // new Pair() is comparator given to pq to use.
