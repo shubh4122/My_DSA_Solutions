@@ -105,14 +105,63 @@ public class Graphs {
     }
 
 //  This is for graphs, where we have weights. So it stores the destination node and the weights
-static class Pair{
+static class Pair implements Comparator<Pair>{
         int node, weight;
+        Pair(){}
+
         Pair(int node, int weight) {
             this.node = node;
             this.weight = weight;
         }
-    }
 
+    @Override
+    public int compare(Pair p1, Pair p2) {
+        //quick way to implement. For ascending order. See other way too.
+        return p1.weight - p2.weight;
+    }
+}
+
+    public static int[] dijkstra(ArrayList<ArrayList<ArrayList<Integer>>> graph, int n, int src) {
+        //Create Priority Queue
+        PriorityQueue<Pair> pq = new PriorityQueue<>(new Pair()); // new Pair() is comparator given to pq to use.
+        int[] dist = new int[n];
+        Arrays.fill(dist, INFINITY);
+
+        //add src to PQ
+        pq.add(new Pair(src, 0));
+        dist[src] = 0;
+
+/*
+        |--------------------------------------------------------|
+        |        ******** FINDING SHORTEST PATH ********         |
+        |                                                        |
+        |      Do below steps: UNTIL pq is empty                 |
+        |       1. Pop the node(with least dist). Property of pq |
+        |       2. Visit all adj nodes of Popped node            |
+        |       3. Calc newDist, if its Lower:                   |
+        |               a. Update it in dist[]                   |
+        |               b. Push this node Pair in PQ             |
+        |--------------------------------------------------------|
+*/
+        while (!pq.isEmpty()) {
+            Pair topNode = pq.remove();
+            int leastDistNode = topNode.node;
+            int leastDist = topNode.weight;
+
+            for (int i = 0; i < graph.get(leastDistNode).size(); i++) {
+                int adjNode = graph.get(leastDistNode).get(i).get(0);
+                int adjWeight = graph.get(leastDistNode).get(i).get(1);
+
+                int newDist = dist[leastDistNode] + adjWeight;
+                if (newDist < dist[adjNode]) {
+                    dist[adjNode] = newDist;
+                    //node pushed to PQ with new updated DIST.
+                    pq.add(new Pair(adjNode, dist[adjNode]));
+                }
+            }
+        }
+        return dist;
+    }
 
     public static ArrayList<ArrayList<Pair>> edgesToList_Directed_Weighted(int[][] edges, int n) {
         ArrayList<ArrayList<Pair>> graph = new ArrayList<>();
@@ -128,6 +177,9 @@ static class Pair{
     }
 
     public static void shortestDist_DAG_Weighted_using_TOPOSORT(ArrayList<ArrayList<Pair>> graph, int n, int[] dist, int src) {
+//        https://www.codingninjas.com/codestudio/library/shortest-path-in-a-directed-acyclic-graph
+//        Read above article for any sort of doubt.
+
 //        |----------------------------------------------|
 //        |        Step 1 - TOPO SORT, for sequence      |
 //        |----------------------------------------------|
