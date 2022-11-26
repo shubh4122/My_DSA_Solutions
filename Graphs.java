@@ -122,6 +122,29 @@ static class Pair implements Comparator<Pair>{
 }
 
 
+    public static void floyd_warshall(int[][] matrix) {
+        //The initial Matrix is already given.
+        for (int via = 0; via < matrix.length; via++) {
+            for (int src = 0; src < matrix.length; src++) {
+                for (int dest = 0; dest < matrix.length; dest++) {
+                    //Here -1 Denotes INFINITY. Or NO EDGE between nodes.
+                    if (matrix[src][via] == -1)
+                        break;//if src -> via isnt defined. No need to see via -> dest. It will be useless. so CHANGE SRC
+                    else if (matrix[via][dest] == -1)
+                        continue;//if via -> dest is not defined but src -> via defined.. Change destination.
+                    else {
+                        int newDist = matrix[src][via] + matrix[via][dest];
+                        if (matrix[src][dest] == -1) // if it's already undefined, update newDist without comparing.
+                            matrix[src][dest] = newDist;
+                        else
+                            matrix[src][dest] = Math.min(matrix[src][dest], newDist);
+                    }
+
+                }
+            }
+        }
+    }
+
     public static int[] bellman_ford(ArrayList<ArrayList<Integer>> edges, int n, int src) {
         int[] dist = new int[n];
         Arrays.fill(dist, INFINITY);
