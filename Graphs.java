@@ -101,7 +101,7 @@ public class Graphs {
 //        System.out.println(Arrays.toString(topoBFS(graph, n)));
 
         int[][] edges = {{0,1},{0,3},{3,4},{4 ,5},{5, 6},{1,2},{2,6},{6,7},{7,8},{6,8}} ;
-        System.out.println(edgesToList(edges, 9));
+//        System.out.println(edgesToList(edges, 9));
     }
 
 //  This is for graphs, where we have weights. So it stores the destination node and the weights
@@ -121,6 +121,56 @@ static class Pair implements Comparator<Pair>{
     }
 }
 
+    public static ArrayList<ArrayList<Pair>> edgesToListWeightedUndirected(int[][] edges, int n) {
+        ArrayList<ArrayList<Pair>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<Pair>());
+        }
+
+        for (int i = 0; i < edges.length; i++) {
+//          For self loops. Prevents repetition of nodes. like 3-3, 3-5. So without this it will be. 3-3,3,5. 2 times 3.
+            if (edges[i][0] == edges[i][1]) {
+                graph.get(edges[i][0]).add(new Pair(edges[i][1], edges[i][2]));
+                continue;
+            }
+//          Coz in undirected graphs, 0-1  --> vertex is both from 0 to 1, and 1 to 0
+            graph.get(edges[i][0]).add(new Pair(edges[i][1], edges[i][2]));
+            graph.get(edges[i][1]).add(new Pair(edges[i][0], edges[i][2]));
+        }
+//        System.out.println(graph);
+        return graph;
+    }
+
+    //Anatomy of INPUT - edges[][] :
+    //e[i][0] : u
+    //e[i][1] : v
+    //e[i][2] : wt
+    public static int primsMST(int V, int E, int edges[][]) {
+        PriorityQueue<Pair> pq = new PriorityQueue<>(new Pair()); // new Pair() is comparator given to pq to use.
+        boolean[] vis = new boolean[V];
+        int mstSum = 0;
+        ArrayList<ArrayList<Pair>> graph = edgesToListWeightedUndirected(edges, V);
+
+        //put any random node in PQ, as starting point
+        pq.add(new Pair(0, 0)); // pair(src, wt)
+
+        while (!pq.isEmpty()) {
+            Pair topNode = pq.remove();
+            int node = topNode.node;
+            int wt = topNode.weight;
+
+            if (vis[node])  continue;
+            vis[node] = true;
+            mstSum += wt;
+
+            for (Pair adjNode : graph.get(node)) {
+                if (!vis[adjNode.node]) {
+                    pq.add(adjNode);
+                }
+            }
+        }
+        return mstSum;
+    }
 
     public static void floyd_warshall(int[][] matrix) {
         //The initial Matrix is already given.
