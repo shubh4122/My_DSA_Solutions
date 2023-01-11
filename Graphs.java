@@ -133,6 +133,7 @@ static class Pair implements Comparator<Pair>{
  */
 
         //Done using comparator because we needed to sort complete arr wrt one particular col, wt
+        //O(E.logE)
         Arrays.sort(edges, new Comparator<int[]>() {//can use lambda function toooo!!
             @Override
             public int compare(int[] first, int[] second) {
@@ -152,6 +153,7 @@ static class Pair implements Comparator<Pair>{
         //e[i][2] : wt
         int mstSum = 0;
         DisjointSet ds = new DisjointSet(V);
+        //O(E x 4alpha x 2)
         for (int[] edge : edges) {
             if (ds.findUltParent(edge[0]) != ds.findUltParent(edge[1])) {
                 ds.unionByRank(edge[0], edge[1]);
