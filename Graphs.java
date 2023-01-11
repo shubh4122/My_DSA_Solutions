@@ -104,23 +104,93 @@ public class Graphs {
 //        System.out.println(edgesToList(edges, 9));
     }
 
-//  This is for graphs, where we have weights. So it stores the destination node and the weights
-static class Pair implements Comparator<Pair>{
-        int node, weight;
-        Pair(){}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    public static int kosarajuSCC(int V, ArrayList<ArrayList<Integer>> graph) {
+    /*
+             ----------------------------------------------
+            |                Kosaraju Algo                 |
+            |     1. Sort the edges acc to finishing time  |
+            |     2. Reverse Graph(All edges of graph)     |
+            |     3. Do DFS in the SORTED order            |
+             ----------------------------------------------
+     */
+            boolean[] vis = new boolean[V];
+            Stack<Integer> st = new Stack<>();
+            for (int i = 0; i < V; i++) {
+                if (!vis[i])
+                    dfsKosaraju1(graph, vis, i, st);
+            }
+            //At this point, we have stack with sorted values.
 
-        Pair(int node, int weight) {
-            this.node = node;
-            this.weight = weight;
-        }
+            //Reversing graph
+            Arrays.fill(vis, false);
+            ArrayList<ArrayList<Integer>> graphReversed = new ArrayList<>();//new graph
+            for (int i = 0; i < V; i++) {
+                graphReversed.add(new ArrayList<Integer>());
+            }
+            for (int i = 0; i < V; i++) {
+                if (!vis[i])
+                    dfsKosaraju2(graph, vis, i, graphReversed);
+            }
+            //At this point we have reversed graph in graphRev
 
-    @Override
-    public int compare(Pair p1, Pair p2) {
-        //quick way to implement. For ascending order. See other way too.
-        return p1.weight - p2.weight;
+            //Do DFS to find SCC
+            Arrays.fill(vis, false);
+            int countSCC = 0;
+            while (!st.isEmpty()) {
+                int node = st.pop();
+                if (!vis[node]) {
+                    countSCC++;
+                    dfsKosaraju3(graphReversed, vis, node);
+                }
+            }
+
+            return countSCC;
     }
-}
 
+    //For DFS finally to count SCC
+    private static void dfsKosaraju3(ArrayList<ArrayList<Integer>> graphReversed, boolean[] vis, int node) {
+        if (vis[node])
+            return;
+
+        vis[node] = true;
+
+        for (int val : graphReversed.get(node)) {
+            dfsKosaraju3(graphReversed, vis, val);
+        }
+    }
+
+    //To REVERSE the graph
+    private static void dfsKosaraju2(ArrayList<ArrayList<Integer>> graph, boolean[] vis, int temp, ArrayList<ArrayList<Integer>> graphReversed) {
+        if (vis[temp])
+            return;
+
+        vis[temp] = true;
+
+        for (int val : graph.get(temp)) {
+            graphReversed.get(val).add(temp);
+            dfsKosaraju2(graph, vis, val, graphReversed);
+        }
+    }
+
+    //To SORT the vertices in order of FINISHING TIME
+    private static void dfsKosaraju1(ArrayList<ArrayList<Integer>> graph, boolean[] vis, int temp, Stack<Integer> st) {
+        if (vis[temp])
+            return;
+
+        vis[temp] = true;
+
+        for (int val : graph.get(temp)) {
+            dfsKosaraju1(graph, vis, val, st);
+        }
+        //This adds the Nodes in stack. 1st finished node enters first. and hence last finished is on TOP
+        st.add(temp);
+    }
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    
     public static int kruskalMST(int V, int E, int edges[][]) {
 /*
          ----------------------------------------------
@@ -162,6 +232,8 @@ static class Pair implements Comparator<Pair>{
         }
         return mstSum;
     }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
     public static ArrayList<ArrayList<Pair>> edgesToListWeightedUndirected(int[][] edges, int n) {
         ArrayList<ArrayList<Pair>> graph = new ArrayList<>();
@@ -214,6 +286,9 @@ static class Pair implements Comparator<Pair>{
         return mstSum;
     }
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+
     public static void floyd_warshall(int[][] matrix) {
         //The initial Matrix is already given.
         for (int via = 0; via < matrix.length; via++) {
@@ -236,6 +311,8 @@ static class Pair implements Comparator<Pair>{
             }
         }
     }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
     public static int[] bellman_ford(ArrayList<ArrayList<Integer>> edges, int n, int src) {
         int[] dist = new int[n];
@@ -278,6 +355,9 @@ static class Pair implements Comparator<Pair>{
         return false;//no negative cycle
     }
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    
     public static int[] dijkstra(ArrayList<ArrayList<ArrayList<Integer>>> graph, int n, int src) {
         //Create Priority Queue
         PriorityQueue<Pair> pq = new PriorityQueue<>(new Pair()); // new Pair() is comparator given to pq to use.
@@ -320,6 +400,8 @@ static class Pair implements Comparator<Pair>{
         return dist;
     }
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     public static ArrayList<ArrayList<Pair>> edgesToList_Directed_Weighted(int[][] edges, int n) {
         ArrayList<ArrayList<Pair>> graph = new ArrayList<>();
         for (int i = 0; i < n; i++) {
@@ -332,6 +414,8 @@ static class Pair implements Comparator<Pair>{
 //        System.out.println(graph);
         return graph;
     }
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     public static void shortestDist_DAG_Weighted_using_TOPOSORT(ArrayList<ArrayList<Pair>> graph, int n, int[] dist, int src) {
 //        https://www.codingninjas.com/codestudio/library/shortest-path-in-a-directed-acyclic-graph
@@ -401,6 +485,7 @@ static class Pair implements Comparator<Pair>{
         }
     }
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //------------------MY SOLUTION - DIFFERENT FROM ALL SOLUTIONS ONLINE!!------------------
 //    IT is same as for undirected unit weight graphs, with slight changes. Instead of 1, add wt.
@@ -437,7 +522,9 @@ static class Pair implements Comparator<Pair>{
         }
     }
 
-//    Use this to convert edges[][] to adjacency list. when not given directly.
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //    Use this to convert edges[][] to adjacency list. when not given directly.
 //    FOR DIRECTED GRAPHS, JUST ADD EDGES ONE WAY.
     public static ArrayList<ArrayList<Integer>> edgesToList(int[][] edges, int n) {
         ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
@@ -522,6 +609,8 @@ static class Pair implements Comparator<Pair>{
     }
 
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     public static boolean isCyclicBFS(ArrayList<ArrayList<Integer>> graph, int n) {
 //      Using Kahn's algo
 //      SAME CODE as topoBFS. almost
@@ -574,7 +663,9 @@ static class Pair implements Comparator<Pair>{
 
     }
 
-//  KAHN'S Algorithm
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //  KAHN'S Algorithm
     public static int[] topoBFS(ArrayList<ArrayList<Integer>> graph, int n) {
 //      Data structures Required
         int[] indegree = new int[n];
@@ -615,6 +706,8 @@ static class Pair implements Comparator<Pair>{
         return ans;
     }
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     public static int[] topoDFS(ArrayList<ArrayList<Integer>> graph, int n) {
         boolean[] vis = new boolean[n];
 
@@ -650,6 +743,8 @@ static class Pair implements Comparator<Pair>{
         }
     }
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     public static boolean isCyclicDirectedGraph(ArrayList<ArrayList<Integer>> graph, int n) {
         boolean visited[] = new boolean[n];
         boolean dfsVisited[] = new boolean[n];
@@ -683,6 +778,8 @@ static class Pair implements Comparator<Pair>{
         dfsVisited[node] = false;
         return false;
     }
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
     public static boolean isBipartiteDFS(ArrayList<ArrayList<Integer>> graph, int n){
@@ -727,6 +824,8 @@ static class Pair implements Comparator<Pair>{
         return true;
     }
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     public static boolean isBipartiteGraphBFS(ArrayList<ArrayList<Integer>> graph, int n) {
 //      Here thing to NOTE is, we use color arr instead of Visited. Color arr keeps track of both color and visited
 //      0 : Not visited,
@@ -758,6 +857,8 @@ static class Pair implements Comparator<Pair>{
         }
         return true;
     }
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     public static boolean detectCycleDfs(int n, ArrayList<ArrayList<Integer>> graph) {
         boolean[] vis = new boolean[n];
@@ -799,6 +900,8 @@ static class Pair implements Comparator<Pair>{
         return false;
     }
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     public static boolean detectCycleBFS(int n, ArrayList<ArrayList<Integer>> graph) {
         Queue<Integer> q = new ArrayDeque<>();
         boolean[] visited = new boolean[n];
@@ -833,6 +936,9 @@ static class Pair implements Comparator<Pair>{
         return false;
     }
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    
     public static ArrayList<Integer> dfsOfGraph(int n, ArrayList<ArrayList<Integer>> graph) {
         boolean[] vis = new boolean[n];
         ArrayList<Integer> res = new ArrayList<>();
@@ -854,6 +960,8 @@ static class Pair implements Comparator<Pair>{
             dfs(graph, vis, val, res);
         }
     }
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     public static ArrayList<Integer> bfs(int n, ArrayList<ArrayList<Integer>> graph) {
         ArrayList<Integer> ans = new ArrayList<>();
@@ -886,4 +994,26 @@ static class Pair implements Comparator<Pair>{
 
         return ans;
     }
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 }
+
+
+//  This is for graphs, where we have weights. So it stores the destination node and the weights
+class Pair implements Comparator<Pair>{
+    int node, weight;
+    Pair(){}
+
+    Pair(int node, int weight) {
+        this.node = node;
+        this.weight = weight;
+    }
+
+    @Override
+    public int compare(Pair p1, Pair p2) {
+        //quick way to implement. For ascending order. See other way too.
+        return p1.weight - p2.weight;
+    }
+}
+
