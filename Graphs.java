@@ -121,6 +121,46 @@ static class Pair implements Comparator<Pair>{
     }
 }
 
+    public static int kruskalMST(int V, int E, int edges[][]) {
+/*
+         ----------------------------------------------
+        |                Kruskal Algo                  |
+        |     1. Sort the edges wrt to weights         |
+        |     2. Take, smallest, and add it using DSet |
+        |     3. If Ult Par of 2 nodes arent same,     |
+        |        then join the edge between them       |
+         ----------------------------------------------
+ */
+
+        //Done using comparator because we needed to sort complete arr wrt one particular col, wt
+        Arrays.sort(edges, new Comparator<int[]>() {//can use lambda function toooo!!
+            @Override
+            public int compare(int[] first, int[] second) {
+                //asc order
+                if (first[2] > second[2]) //[2] is weight
+                    return 1;
+
+                else if (first[2] < second[2])
+                    return -1;
+
+                return 0;
+            }
+        });
+        //Anatomy of INPUT - edges[][] :
+        //e[i][0] : u
+        //e[i][1] : v
+        //e[i][2] : wt
+        int mstSum = 0;
+        DisjointSet ds = new DisjointSet(V);
+        for (int[] edge : edges) {
+            if (ds.findUltParent(edge[0]) != ds.findUltParent(edge[1])) {
+                ds.unionByRank(edge[0], edge[1]);
+                mstSum += edge[2];
+            }
+        }
+        return mstSum;
+    }
+
     public static ArrayList<ArrayList<Pair>> edgesToListWeightedUndirected(int[][] edges, int n) {
         ArrayList<ArrayList<Pair>> graph = new ArrayList<>();
         for (int i = 0; i < n; i++) {
