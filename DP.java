@@ -10,6 +10,27 @@ public class DP {
             Arrays.fill(dpMem[i], -1);
     }
 
+    public static boolean isSubsetSum(int n, int arr[], int sum) {
+        boolean[][] dp = new boolean[n+1][sum+1];
+        //Initialization - row0 -> F, col0 -> T
+        Arrays.fill(dp[0], false);//row0 filled
+        for (int i = 0; i < n + 1; i++) {
+            dp[i][0] = true; // col0 filled
+        }
+
+        //Choice Diag code
+        //NOTE: The loop MUST START FROM 1, 0th row, col have already been taken care of
+        for (int i = 1; i < n + 1; i++) {
+            for (int j = 1; j < sum + 1; j++) {
+                if (arr[i-1] <= j)
+                    dp[i][j] = dp[i-1][j - arr[i-1]] || dp[i-1][j];//MAX replaced by || (or)
+                else
+                    dp[i][j] = dp[i-1][j];
+            }
+        }
+        return dp[n][sum];
+    }
+
     public static int ksTab(int[] val, int[] wt, int w, int n) {
         int[][] dp = new int[n+1][w+1];
         //BC -> Initialization. Make row(n) = 0 as 0, and col(w)=0 as 0
