@@ -1,6 +1,10 @@
 package DSA;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+
 /*
 
 
@@ -16,11 +20,33 @@ public class DP {
         for (int i = 0; i < dpMem.length; i++)
             Arrays.fill(dpMem[i], -1);
 
-        int[] arr = {1, 4} ;//{2, 3, 5, 6, 8, 10};
+        int[] arr = {1,1,2,3};//{1, 4} ;//{2, 3, 5, 6, 8, 10};
         int sum = 10;
+        int diff = 1;
 //        System.out.println(countSubsetsMem(arr, arr.length, sum, dpMem));
-        System.out.println(subsetPartitionMinSumDifference(arr, arr.length));
+//        System.out.println(subsetPartitionMinSumDifference(arr, arr.length));
+        System.out.println(waysToPartitionSubsetsForGivenDifference(arr.length, diff, arr));
     }
+
+    public static int targetSumLeetcode(int[] arr, int targetSum) {
+        //Because target was from -1000 to 1000. And if we can get +n target, we can definitely get -n by just flipping S1 and S2 in substraction
+        targetSum = Math.abs(targetSum);
+        return waysToPartitionSubsetsForGivenDifference(arr.length, targetSum, arr);
+    }
+
+    public static int waysToPartitionSubsetsForGivenDifference(int n, int diff, int[] arr) {
+        int sum = 0;
+        for (int i = 0; i < n; i++)
+            sum += arr[i];
+
+        if((sum+diff)%2 != 0) return 0;
+
+        int sumSubset1 = (sum+diff)/2;//Owing to 2 equations
+        //now count how many subsets are there with this sum
+        return countSubsetTabulationMY(arr, n, sumSubset1);
+    }
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     public static int subsetPartitionMinSumDifference(int[] arr, int n) {
         int sum = 0;
