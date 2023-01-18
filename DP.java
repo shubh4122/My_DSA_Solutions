@@ -28,12 +28,36 @@ public class DP {
         System.out.println(waysToPartitionSubsetsForGivenDifference(arr.length, diff, arr));
     }
 
+    public static int unboundedKnapsack(int[] val, int[] wt, int n, int w) {
+        int[][] dp = new int[n+1][w+1];
+        //Initialisation
+        Arrays.fill(dp[0], 0);
+        for (int i = 0; i < n + 1; i++)
+            dp[i][0] = 0;
+
+        //Choice Diag
+        for (int i = 1; i < n + 1; i++) {
+            for (int j = 1; j < w + 1; j++) {
+                //Max of (Taken(hence Unprocessed, so dp[i][...]), Not taken(hence Processed, so dp[i-1][j]))
+                if (wt[i-1] <= j)
+                    dp[i][j] = Math.max(val[i-1] + dp[i][j - wt[i-1]], dp[i-1][j]);
+
+                else
+                    dp[i][j] = dp[i-1][j];
+            }
+        }
+
+        return dp[n][w];
+    }
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     public static int targetSumLeetcode(int[] arr, int targetSum) {
         //Because target was from -1000 to 1000. And if we can get +n target, we can definitely get -n by just flipping S1 and S2 in substraction
         targetSum = Math.abs(targetSum);
         return waysToPartitionSubsetsForGivenDifference(arr.length, targetSum, arr);
     }
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     public static int waysToPartitionSubsetsForGivenDifference(int n, int diff, int[] arr) {
         int sum = 0;
         for (int i = 0; i < n; i++)
