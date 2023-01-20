@@ -6,28 +6,26 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 /*
-
-
-NOTE : Most Codes below are Top Down(Tabulation) Approach.
+NOTE : Many Codes below will have direct Top Down(Tabulation) Approach.
+       That is because they were similar to some other prev prob so just copied the method.
        BUT if some new problem is encountered. always try writing recursive code, and then MEMOIZING it!!!
-
-
  */
 public class DP {
-    static int[][] dpMem = new int[1001][1001];//n=1000, w=1000
+    static int[][] dpMem = new int[10001][10001];//n=10000, w=10000
     public static void main(String[] args) {
         //initializing dp arr with -1, coz max profit cant be -1
         for (int i = 0; i < dpMem.length; i++)
             Arrays.fill(dpMem[i], -1);
 
-        int[] arr = {2,5,3,6};//{1,1,2,3};//{1, 4} ;//{2, 3, 5, 6, 8, 10};
-        int sum = 10;
+        int[] arr = {25, 10, 5};//{2,5,3,6};//{1,1,2,3};//{1, 4} ;//{2, 3, 5, 6, 8, 10};
+        int sum = 30;
         int diff = 1;
 //        System.out.println(countSubsetsMem(arr, arr.length, sum, dpMem));
 //        System.out.println(subsetPartitionMinSumDifference(arr, arr.length));
 //        System.out.println(waysToPartitionSubsetsForGivenDifference(arr.length, diff, arr));
-
-        System.out.println(coinChange1(arr, arr.length, sum));
+//        System.out.println(coinChange1(arr, arr.length, sum));
+//        System.out.println(coinChange2(arr, arr.length, sum));
+//        System.out.println(coinChange2Tabulation(arr, arr.length, sum));
     }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -48,12 +46,101 @@ public class DP {
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    
+    public static int coinChange2TabulationSPACE_OPTIMISED(int[] coins, int n, int sum) {
+        //Using 2 1D arr instead of dp[][]. SAVES A LOT OF SPACE!
+        int[] prevRow = new int[sum+1];// At initialization. This is row0
+        int[] currRow = new int[sum+1];// At initialization. This is row1
+
+        //Initialization - BC
+        Arrays.fill(prevRow, Integer.MAX_VALUE - 1);//filling 0th row
+        //Instead of filling 1st col, here we'll fill only 1st cell.
+        prevRow[0] = 0;
+    //        Make changes according to new arrays!!
+    //        for (int j = 1; j < sum + 1; j++) {
+    //            if (j % coins[0] == 0)    dp[1][j] = j / coins[0];
+    //            else                      dp[1][j] = Integer.MAX_VALUE - 1;
+    //        }
+
+        //MAIN CODE
+
+        for (int i = 1; i < n + 1; i++) {// i = 2 when 3rd BC is used
+            for (int j = 1; j < sum + 1; j++) {
+                //All ...[i][*] -> curr[*]
+                //all ...[i-1][*] -> prev[*]
+                if (coins[i-1] <= j)
+                    currRow[j] = Math.min(1+currRow[j-coins[i-1]], prevRow[j]);
+//                    dp[i][j] = Math.min(1+dp[i][j - coins[i-1]], dp[i-1][j]);
+
+                else
+                    currRow[j] = prevRow[j];
+//                    dp[i][j] = dp[i-1][j];
+            }
+            //updating prev after current row done.
+            prevRow = currRow;
+        }
+
+        return currRow[sum];
+//        return dp[n][sum];
+    }
+
+    public static int coinChange2Tabulation(int[] coins, int n, int sum) {
+        int[][] dp = new int[n+1][sum+1];
+        //Initialization - BC
+        Arrays.fill(dp[0], Integer.MAX_VALUE - 1);
+        for (int i = 0; i < n + 1; i++)
+            dp[i][0] = 0;
+//        CAN ALSO traverse arr and Fill 3rd BC val too, but it works without that too. so leaving it
+//        for (int j = 1; j < sum + 1; j++) {
+//            if (j % coins[0] == 0)    dp[1][j] = j / coins[0];
+//            else                      dp[1][j] = Integer.MAX_VALUE - 1;
+//        }
+
+        //MAIN CODE
+        for (int i = 1; i < n + 1; i++) {// i = 2 when 3rd BC is used
+            for (int j = 1; j < sum + 1; j++) {
+                if (coins[i-1] <= j)
+                    dp[i][j] = Math.min(1+dp[i][j - coins[i-1]], dp[i-1][j]);
+
+                else
+                    dp[i][j] = dp[i-1][j];
+            }
+        }
+
+        return dp[n][sum];
+    }
+
+    //Min num of coins for sum upto given sum
+    public static int coinChange2(int[] coins, int n, int sum) {
+        //HYPOTHESIS of this method : --> V IMP
+        //  It returns the Min Number of coins req to give sum.
+
+        //BC
+        if (n == 0 && sum != 0) return Integer.MAX_VALUE - 1; //because when no possible way, then num of coins UNDEFINED
+        if (sum == 0)   return 0;
+        // seee if any other bc?
+        //NOTE n-1 = 0 here always. so we can also write coins[0]
+        //if (n == 1) return sum % coins[n-1] == 0 ? sum/coins[n-1] : Integer.MAX_VALUE -1;
+
+        //Memoization
+        if (dpMem[n][sum] != -1)
+            return dpMem[n][sum];
+
+        //Choice diag
+        if (coins[n-1] <= sum)
+            return dpMem[n][sum] = Math.min(1+coinChange2(coins, n, sum - coins[n-1]), coinChange2(coins, n-1, sum));
+        else
+            return dpMem[n][sum] = coinChange2(coins, n-1, sum);
+
+//        https://practice.geeksforgeeks.org/problems/number-of-coins1824/1
+//        https://leetcode.com/problems/coin-change/
+    }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    //USE LONG instead of int for COUNT. That is return type -> long, dpMem type -> long --- IN GFG. In LC its correct
+    //Max no. of ways QUESTION
     public static int coinChange1(int[] coins, int n, int sum) {
-        //Max no. of ways QUESTION
+        //USE LONG instead of int for COUNT. That is return type -> long, dpMem type -> long --- IN GFG. In LC its correct
         //same as countSubsets--> with given sum. Just that it'll be unbounded here
         //BC
         if (sum == 0) return 1; // Empty set. i.e. No coins can sum upto 0
