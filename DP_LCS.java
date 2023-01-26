@@ -6,8 +6,8 @@ import java.util.List;
 
 public class DP_LCS {
     public static void main(String[] args) {
-        String x = "abcd";
-        String y = "xycd";
+        String x = "abac";
+        String y = "cab";
         int lx = x.length();
         int ly = y.length();
 
@@ -22,10 +22,23 @@ public class DP_LCS {
             Arrays.fill(dpMems[i], "-1");
 
 //        System.out.println(lcs(lx, ly, x, y, dpMem));
-//        System.out.println(lcsPrintMY_DOUBT(lx, ly, x, y, dpMems));
-        System.out.println(scs(lx, ly, x, y, dpMems));
+        System.out.println(lcsPrint(lx, ly, x, y, dpMem));
+        System.out.println(lcsPrintMy(lx, ly, x, y, dpMems));
+//        System.out.println(scs(lx, ly, x, y, dpMem));
     }
 
+    public static int minDelToPalindrome(String s, int[][] dp) {
+        return s.length() - longestPalindromicSubseq(s, dp); // When there's only 1 str, dp[s+1][s+1]
+    }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    public static int longestPalindromicSubseq(String a, int[][] dp) {
+        //Step 1: Find 2nd HIDDEN string
+        String revA = new StringBuilder(a).reverse().toString();
+
+        //Step 2: Call LCS for the above 2. That will be the final ANS!!!!!
+        return lcs(a.length(), revA.length(), a, revA, dp);
+    }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     //operations here mean, Insertions and Deletions
     public static int minOps(String a, String b, int[][] dpMem) {
         //Step 1: Declare Lengths
@@ -43,26 +56,48 @@ public class DP_LCS {
     }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     //Shortest Common SUPERsequence
-    public static String scs(int lx, int ly, String x, String y, String[][] dpMem) {
-        //Step 1: Merge Both
-        StringBuilder superSeq = new StringBuilder(x + y);
+    public static String scs(int lx, int ly, String x, String y, int[][] dpMem) {
+        //Step 1:   Fill the Table(int dp Table, storing len of subseq) first
+        lcsTabulation(lx, ly, x, y, dpMem);
 
-        //Step 2: Find lcs of x, y
-        StringBuilder lcs = new StringBuilder( lcsPrintMy(lx, ly, x, y, dpMem) );
+        //Step 2:   Start from last of table, and find the Common Subseq
+        StringBuilder ans = new StringBuilder();
 
-        //Step 3: Remove LCS from superSeq --> This will be scs
-        int i = 0;
-        while (lcs.length() > 0) {
-            if (superSeq.charAt(i) == lcs.charAt(0)) {
-                superSeq.deleteCharAt(i);
-                lcs.deleteCharAt(0);
-                i--;
+        int i = lx, j = ly;
+        while(i > 0 && j > 0) {
+            if (x.charAt(i - 1) == y.charAt(j - 1)) {
+                ans.append(x.charAt(i - 1));    //a. First add it to Ans str
+                //b. mov ahead - DIAGONAL MOVE
+                i = i - 1;//i--
+                j = j -1 ;//j--
             }
-            i++;
+            else {
+                if (dpMem[i-1][j] > dpMem[i][j-1]) {
+                    ans.append(x.charAt(i - 1));
+                    i = i - 1;
+                }
+                else {
+                    ans.append(y.charAt(j - 1));
+                    j = j - 1;
+                }
+            }
         }
 
-        //Step 4: By now we have The Shortest Common SuperSeq, RETURN it
-        return superSeq.toString();
+        //Step 3: Add remaining letters to scs --> These are UNCOMMON(or NON-LCS) letters, to be included in scs
+        while (i > 0) {//And j = 0
+            ans.append(x.charAt(i - 1));
+            i--;
+        }
+        while (j>0) {//And i = 0
+            ans.append(y.charAt(j - 1));
+            j--;
+        }
+        return ans.reverse().toString();
+        //https://leetcode.com/problems/shortest-common-supersequence/description/
+    }
+
+    public static int scsLength(int lx, int ly, String x, String y, int[][] dpMem) {
+        return x.length() + y.length() - lcs(lx, ly, x, y, dpMem);
     }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     public static List<Integer> printAllLCS(){
@@ -72,15 +107,15 @@ public class DP_LCS {
     }
     public static String lcsPrint(int lx, int ly, String x, String y, int[][] dpMem) {
         //Step 1:   Fill the Table(int dp Table, storing len of subseq) first
-        lcs(lx, ly, x, y, dpMem);
+        lcsTabulation(lx, ly, x, y, dpMem); //NOTE: don't use LCS MEMO, because it'll have -1 as base case. so it'll cause problems
 
         //Step 2:   Start from last of table, and find the Common Subseq
         StringBuilder ans = new StringBuilder();
 
         int i = lx, j = ly;
         while(i > 0 && j > 0) {
-            if (x.charAt(i) == y.charAt(j)) {
-                ans.append(x.charAt(i));    //a. First add it to Ans str
+            if (x.charAt(i-1) == y.charAt(j-1)) {
+                ans.append(x.charAt(i-1));    //a. First add it to Ans str
                 //b. mov ahead - DIAGONAL MOVE
                 i = i - 1;//i--
                 j = j -1 ;//j--
@@ -179,9 +214,7 @@ public class DP_LCS {
         return maxLen;
     }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    public static int lcsTabulation(int lx, int ly, String x, String y) {
-        //table
-        int[][] dp = new int[lx+1][ly+1];
+    public static int lcsTabulation(int lx, int ly, String x, String y, int[][] dp) {
 
         //Initialization
         Arrays.fill(dp[0], 0);
