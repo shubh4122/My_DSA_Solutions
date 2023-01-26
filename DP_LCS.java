@@ -26,6 +26,22 @@ public class DP_LCS {
         System.out.println(scs(lx, ly, x, y, dpMems));
     }
 
+    //operations here mean, Insertions and Deletions
+    public static int minOps(String a, String b, int[][] dpMem) {
+        //Step 1: Declare Lengths
+        int la = a.length();
+        int lb = b.length();
+
+        //Step 2: Find LCS len
+        int lLCS = lcs(la, lb, a, b, dpMem);
+
+        //Step 3: Find no. of Insertions and Deletions
+        int ins = lb - lLCS;
+        int del = la - lLCS;
+
+        return ins+del;
+    }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     //Shortest Common SUPERsequence
     public static String scs(int lx, int ly, String x, String y, String[][] dpMem) {
         //Step 1: Merge Both
