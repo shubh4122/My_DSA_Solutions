@@ -6,8 +6,8 @@ import java.util.List;
 
 public class DP_LCS {
     public static void main(String[] args) {
-        String x = "398397970";
-        String y = "3399917206";
+        String x = "abcd";
+        String y = "xycd";
         int lx = x.length();
         int ly = y.length();
 
@@ -23,8 +23,37 @@ public class DP_LCS {
 
 //        System.out.println(lcs(lx, ly, x, y, dpMem));
 //        System.out.println(lcsPrintMY_DOUBT(lx, ly, x, y, dpMems));
+        System.out.println(scs(lx, ly, x, y, dpMems));
     }
 
+    //Shortest Common SUPERsequence
+    public static String scs(int lx, int ly, String x, String y, String[][] dpMem) {
+        //Step 1: Merge Both
+        StringBuilder superSeq = new StringBuilder(x + y);
+
+        //Step 2: Find lcs of x, y
+        StringBuilder lcs = new StringBuilder( lcsPrintMy(lx, ly, x, y, dpMem) );
+
+        //Step 3: Remove LCS from superSeq --> This will be scs
+        int i = 0;
+        while (lcs.length() > 0) {
+            if (superSeq.charAt(i) == lcs.charAt(0)) {
+                superSeq.deleteCharAt(i);
+                lcs.deleteCharAt(0);
+                i--;
+            }
+            i++;
+        }
+
+        //Step 4: By now we have The Shortest Common SuperSeq, RETURN it
+        return superSeq.toString();
+    }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    public static List<Integer> printAllLCS(){
+        //https://practice.geeksforgeeks.org/problems/print-all-lcs-sequences3413/1
+        //DO THIS QUESTION - GFG HARD
+        return new ArrayList<>();
+    }
     public static String lcsPrint(int lx, int ly, String x, String y, int[][] dpMem) {
         //Step 1:   Fill the Table(int dp Table, storing len of subseq) first
         lcs(lx, ly, x, y, dpMem);
@@ -80,7 +109,7 @@ public class DP_LCS {
 
     //Returns ANY one of the LCS
     public static String lcsPrintMy(int lx, int ly, String x, String y, String[][] dpMems) {
-        //NOTE: I DONT KNOW IF THIS IS CORRECT. THIS IS MY SOLUTION AND IT WORKED FOR MANY TEST CASES. BUT CANT
+        //NOTE: I DON'T KNOW IF THIS IS CORRECT. THIS IS MY SOLUTION AND IT WORKED FOR MANY TEST CASES. BUT CANT
         //CONFIDENTLY SAY IT WILL ALWAYS WORK. COZ THERE IS NO QUES FOR IT
         //https://www.hackerrank.com/challenges/dynamic-programming-classics-the-longest-common-subsequence/problem?isFullScreen=false
         //IT WORKS!!!!!! SO ITS A CORRECT SOLUTION!!!!!!!
