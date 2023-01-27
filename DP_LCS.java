@@ -27,6 +27,32 @@ public class DP_LCS {
 //        System.out.println(scs(lx, ly, x, y, dpMem));
     }
 
+
+    public static int lrp(String x, int lx, int[][] dp) {
+        //Step 1: Create 2nd Str
+        String y = x;
+        int ly = y.length();
+
+        //Step 2: Find **LCS** of a, b. Only MINOR change is, skip when i == j
+        //Initialization
+        Arrays.fill(dp[0], 0);
+        for (int i = 0; i < lx + 1; i++)
+            dp[i][0] = 0;
+
+        //Choice Diagram
+        for (int i = 1; i < lx + 1; i++) {
+            for (int j = 1; j < ly + 1; j++) {
+                //ONLY DIFFERENCE IN LRP & LCS--------------⬇️
+                if (x.charAt(i - 1) == y.charAt(j - 1) && i != j)
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                else //last char doesn't matches
+                    dp[i][j] = Math.max(dp[i][j - 1], dp[i - 1][j]);
+            }
+        }
+
+        return dp[lx][ly];
+    }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     public static int minDelToPalindrome(String s, int[][] dp) {
         return s.length() - longestPalindromicSubseq(s, dp); // When there's only 1 str, dp[s+1][s+1]
     }
