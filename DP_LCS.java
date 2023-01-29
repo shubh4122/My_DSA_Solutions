@@ -27,7 +27,51 @@ public class DP_LCS {
 //        System.out.println(scs(lx, ly, x, y, dpMem));
     }
 
+    public static int minInsertionsToPalindrome(String s, int[][] dp) {
+        //M1:
+        //return minDelToPalindrome(s, dp);
 
+
+        //M2:
+        //Step 1: Reverse s and make new string
+        String revS = new StringBuilder(s).reverse().toString();
+
+        //Step 2: Find Lcs
+        int lcs = lcs(s.length(), revS.length(), s, revS, dp);
+
+        //Step 3: Ans = len(s) - lcs
+        return s.length() - lcs;
+    }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    public static boolean seqPatternMatch(String x, String y, int lx, int ly, String[][] dpMem) {
+        //if x = lcs(x,y), return true
+        //M1
+        if (x.equals(lcsPrintMy(lx, ly, x, y, dpMem)))
+            return true;
+
+        return false;
+
+        //M2
+        //Also, we can only check it by length
+        // if lcs == x.length()) return true;
+
+
+        //M3 - NO DP
+//        int j = 0;
+//        if(x.length() == 0)
+//            return true;
+//
+//        for(int i = 0; i < y.length(); i++) {
+//            if(x.charAt(j) == y.charAt(i)) {
+//                j++;
+//            }
+//
+//            if(j == x.length())
+//                return true;
+//        }
+//        return false;
+    }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     public static int lrp(String x, int lx, int[][] dp) {
         //Step 1: Create 2nd Str
         String y = x;
