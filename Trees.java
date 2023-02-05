@@ -343,4 +343,24 @@ public class Trees {
 
         return Math.max(hLeftSubtree, hRightSubtree);
     }
+
+    public static int diameterOfTree(Node node) {
+        if (node == null)
+            return 0;
+
+        //finding ht of left and right subtree.That is the number of nodes present in each subtree
+        int l = height(node.left);
+        int r = height(node.right);
+
+        //Adding the nodes in left and right tree(height) +1 the curr node
+        int diameter = 1+l+r;
+        //finding if diameter exist in only left/right subtree
+        int d1 = diameterOfTree(node.left);
+        int d2 = diameterOfTree(node.right);
+
+        //diameter - diameter includes root
+        //d1 - diameter exists only in left subtree
+        //d2 - diam in right subtree.
+        return Math.max(diameter, Math.max(d1, d2));
+    }
 }
