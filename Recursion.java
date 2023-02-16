@@ -247,6 +247,38 @@ public class Recursion {
 
     }
 
+    //IMP- When subset done on an array/arrayList, its IMPLEMENTATION is important and CHALLENGING!
+    //If we make any changes to arr it changes forever, and change is carried through all rec calls
+    //Unlike string. Hence slight change in code/strategy
+    public static void subsetArr(int[] nums, List<Integer> tempOp, List<List<Integer>> ans, int index) {
+        /*
+            - nums - num arr
+            - tempOp - arr that holds each subset
+            - ans - arr that holds all the subset - final ans
+            - index - instead of changing input arr(nums) we take/not take elem by passing next index(new start of arr)
+         */
+
+        //BC
+        if (index == nums.length) {//empty nums arr
+//            ans.add(tempOp); -- This doesnt work.! gives empty lists!!!!!
+            ans.add(new ArrayList<>(tempOp));
+            return;
+        }
+
+        //Main code
+
+        //Not take
+        subsetArr(nums, tempOp, ans, index + 1);//index+1 means we truncated nums by 1. ( coz we made decision on that elem)
+
+        //Take
+        tempOp.add(nums[index]); //we take the current elem of nums as part of our subset
+        subsetArr(nums, tempOp, ans, index + 1);
+
+        //IMP - must unchange the op arr. We added elem to OP to include it.  BUT then we need to empty it too, for other rec calls.!
+        tempOp.remove(tempOp.size() - 1);
+    }
+
+
     public static void powerSetLexicographically(String ip, String op) {
 //        Subset == Powerset
 //        ip - input / op - output --> I/O Mehtod
