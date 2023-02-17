@@ -261,6 +261,7 @@ public class Recursion {
         //BC
         if (index == nums.length) {//empty nums arr
 //            ans.add(tempOp); -- This doesnt work.! gives empty lists!!!!!
+            //This is doing DEEP COPY!
             ans.add(new ArrayList<>(tempOp));
             return;
         }
